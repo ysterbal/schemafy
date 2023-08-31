@@ -1,3 +1,6 @@
+
+
+
 use crate::Expander;
 use std::{
     io,
@@ -56,7 +59,15 @@ impl<'a, 'b> Generator<'a, 'b> {
 
     pub fn generate_to_file<P: ?Sized + AsRef<Path>>(&self, output_file: &'b P) -> io::Result<()> {
         use std::process::Command;
-        let tokens = self.generate();
+        
+        let mut tokens = quote! {
+            #![allow(non_snake_case)]
+            use serde::Serialize;
+            use serde::Deserialize;
+        };
+
+        tokens.extend(self.generate()); 
+
         let out = tokens.to_string();
         std::fs::write(output_file, &out)?;
         Command::new("rustfmt")

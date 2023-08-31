@@ -1,3 +1,4 @@
 target
 Cargo.lock
 tests/test_suite/
+.DS_Store

@@ -74,9 +74,12 @@ pub use generator::{Generator, GeneratorBuilder};
 use proc_macro2::{Span, TokenStream};
 
 fn replace_invalid_identifier_chars(s: &str) -> String {
-    s.strip_prefix('$')
+    
+    let replaced = s.strip_prefix('$')
         .unwrap_or(s)
-        .replace(|c: char| !c.is_alphanumeric() && c != '_', "_")
+        .replace(|c: char| !c.is_alphanumeric() && c != '_', "_");
+    
+    replaced
 }
 
 fn replace_numeric_start(s: &str) -> String {
@@ -97,7 +100,6 @@ fn remove_excess_underscores(s: &str) -> String {
             result.push(c);
         }
     }
-
     result
 }
 
@@ -157,6 +159,7 @@ fn field(s: &str) -> TokenStream {
     if let Some(t) = rename_keyword("pub", s) {
         return t;
     }
+    
     let snake = s.to_snake_case();
     if snake == s && !snake.contains(|c: char| c == '$' || c == '#') {
         let field = syn::Ident::new(s, Span::call_site());
@@ -166,7 +169,8 @@ fn field(s: &str) -> TokenStream {
     let field = if snake.is_empty() {
         syn::Ident::new("underscore", Span::call_site())
     } else {
-        str_to_ident(&snake)
+        //str_to_ident(&snake)
+        str_to_ident(&s)
     };
 
     quote! {
